@@ -1,7 +1,7 @@
 import pyspark,sys
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType,StructField,IntegerType,StringType,DoubleType
-from pyspark.sql.functions import explode,split
+from pyspark.sql.functions import col,explode,split
 
 schema = StructType([
     StructField("Year", IntegerType(), True),
@@ -52,10 +52,32 @@ df = spark \
   .option("subscribe", Topic) \
   .load()
 
+'''
 query = df.selectExpr("CAST(value AS STRING)") \
+    .createDataFrame\
     .writeStream \
     .outputMode("append") \
     .format("console") \
     .start()
 
 query.awaitTermination()
+'''
+'''
+q = df.select("value") \
+  .writeStream \
+  .outputMode("append")\
+  .format("console") \
+  .start()
+
+q.awaitTermination()
+'''
+#Does not work
+'''
+query = df.selectExpr("CAST(value AS STRING)") \
+    .select(split(col("value"), ",").getItem(9).cast("double").alias("col_10")) \
+    .agg(sum(col("col_10")).alias("sum_col_10")) \
+    .writeStream \
+    .outputMode("complete") \
+    .format("console") \
+    .start()
+'''
