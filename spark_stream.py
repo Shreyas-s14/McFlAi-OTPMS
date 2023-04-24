@@ -1,7 +1,8 @@
 import pyspark,sys
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType,StructField,IntegerType,StringType,DoubleType
-from pyspark.sql.functions import col,explode,split
+from pyspark.sql.functions import col,explode,split,expr,element_at
+from json import loads
 
 schema = StructType([
     StructField("Year", IntegerType(), True),
@@ -53,15 +54,57 @@ df = spark \
   .load()
 
 '''
-query = df.selectExpr("CAST(value AS STRING)") \
-    .createDataFrame\
+#.selectExpr("CAST(value AS STRING)")
+k = 0
+query = df.selectExpr("CAST(value as STRING)")\
+    .toDF("Potato")\
+    .select(split(col("Potato"), ",").getItem(14).cast("integer").alias("Delay")) \
+    .writeStream\
+    .outputMode("append")\
+    .format("console")\
+    .start()\
+'''
+query = df.selectExpr("CAST(value as STRING)")\
+    .toDF("Potato")\
+    .select(split(col("Potato"), ",").getItem(14).cast("integer").alias("Delay"))
+    
+sum = 0
+
+'''
+query = query.select(split(col("value"), ",").getItem(9).cast("double").alias("col_10")) \
+    .agg(sum(col("col_10")).alias("sum_col_10")) \
     .writeStream \
-    .outputMode("append") \
+    .outputMode("complete") \
     .format("console") \
     .start()
-
-query.awaitTermination()
 '''
+
+#fun = df.select(split(col("value"), ",").getItem(1).cast("integer").alias("year"))
+
+'''
+fun = df.selectExpr("CAST(value as STRING)")\
+      .select(element_at("value", 1)).show()
+
+query = fun.writeStream\
+    .outputMode("append")\
+    .format("console")\
+    .start()
+
+
+
+'''
+#fun.awaitTermination()
+
+#query.awaitTermination()
+
+
+
+#record = df.selectExpr("CAST(value AS STRING)")
+#record_obj = record.select(split(col("value"), ",").getItem(9).cast("double").alias("col_10"))
+#record_obj.show()
+
+
+
 '''
 q = df.select("value") \
   .writeStream \

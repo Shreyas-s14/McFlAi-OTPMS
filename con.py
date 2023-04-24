@@ -12,7 +12,7 @@ consumer = KafkaConsumer(
         )
 try:
     for message in consumer:
-        print(str(message.value) + " received")
+        print(str(message.value))
 except KeyboardInterrupt:
     print("\n Airport Closed \n ")
 except:

@@ -21,8 +21,22 @@ try:
         rows = csv.reader(source)
         num = 0
         for row in rows:
-            #print(row)
-            print("Row"+str(num)+ "sent")
+            print(type(row))
+            row[0] = int(row[0])
+            row[1] = int(row[1])
+            row[2] = int(row[2])
+            row[3] = int(row[3])
+            row[4] = int(row[4])
+            row[5] = int(row[5])
+            row[6] = int(row[6])
+            row[7] = int(row[7])
+            row[9] = int(row[9])
+            row[11] = int(row[11])
+            row[12] = int(row[12])
+
+            row[14] = int(row[14])
+            row[15] = int(row[15])
+             
             data_sender.send('airport',value = row)
             num = num+1
             sleep(1)
